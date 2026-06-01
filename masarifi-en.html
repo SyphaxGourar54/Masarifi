@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d4f4a">
+<title>Masarifi · Expense Tracker</title>
+
+<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Masarifi%22%2C%22short_name%22%3A%22Masarifi%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4ede3%22%2C%22theme_color%22%3A%22%230d4f4a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%253D%2522http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%2522%2520viewBox%253D%25220%25200%2520512%2520512%2522%253E%253Crect%2520width%253D%2522512%2522%2520height%253D%2522512%2522%2520rx%253D%2522110%2522%2520fill%253D%2522%25230d4f4a%2522%252F%253E%253Cpath%2520d%253D%2522M150%2520200%2520h212%2520a20%252020%25200%25200%25201%252020%252020%2520v172%2520a20%252020%25200%25200%25201%2520-20%252020%2520h-212%2520a20%252020%25200%25200%25201%2520-20%2520-20%2520v-172%2520a20%252020%25200%25200%25201%252020%2520-20%2520z%2522%2520fill%253D%2522none%2522%2520stroke%253D%2522%2523e8b84b%2522%2520stroke-width%253D%252220%2522%252F%253E%253Cpath%2520d%253D%2522M130%2520260%2520h252%2522%2520stroke%253D%2522%2523e8b84b%2522%2520stroke-width%253D%252220%2522%252F%253E%253C%252Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%22%7D%5D%7D">
+
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%230d4f4a'/%3E%3Cpath d='M150 200 h212 a20 20 0 0 1 20 20 v172 a20 20 0 0 1 -20 20 h-212 a20 20 0 0 1 -20 -20 v-172 a20 20 0 0 1 20 -20 z' fill='none' stroke='%23e8b84b' stroke-width='20'/%3E%3Cpath d='M130 260 h252' stroke='%23e8b84b' stroke-width='20'/%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Masarifi">
+
+<style>
+  :root{
+    --teal:#0d4f4a; --teal-d:#093733; --gold:#e8b84b; --terra:#c75b39;
+    --sand:#f4ede3; --sand-2:#ebe0cf; --ink:#1f2421; --muted:#7a7468;
+    --card:#fffdf9; --line:#e0d4c1; --green:#2f8f6b; --shadow:0 6px 22px rgba(13,79,74,.10);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--sand); color:var(--ink); line-height:1.5;
+    overscroll-behavior-y:none; padding-bottom:96px;
+    background-image:radial-gradient(circle at 0% 0%, rgba(199,91,57,.06), transparent 40%),radial-gradient(circle at 100% 0%, rgba(232,184,75,.07), transparent 40%);
+  }
+  svg.ic{width:1.25em;height:1.25em;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;display:block;margin:auto;flex:none}
+  header{
+    background:linear-gradient(135deg,var(--teal),var(--teal-d));
+    color:#fff; padding:18px 20px 26px; border-radius:0 0 26px 26px;
+    box-shadow:var(--shadow); position:relative; overflow:hidden;
+  }
+  header::after{content:"";position:absolute;right:-30px;bottom:-40px;width:140px;height:140px;border-radius:50%;background:rgba(232,184,75,.12)}
+  .brand{display:flex;align-items:center;gap:11px;font-size:1.35rem;font-weight:700;letter-spacing:.3px}
+  .brand .logo{width:36px;height:36px;background:var(--gold);color:var(--teal-d);border-radius:10px;display:grid;place-items:center}
+  .brand .logo svg{width:20px;height:20px;stroke-width:2.2}
+  .sub{font-size:.78rem;opacity:.8;margin-top:2px;font-weight:400;letter-spacing:0}
+
+  .totals{display:flex;gap:12px;margin-top:18px}
+  .tcard{flex:1;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:12px 14px;backdrop-filter:blur(4px)}
+  .tcard .lbl{font-size:.72rem;opacity:.85}
+  .tcard .val{font-size:1.25rem;font-weight:800;margin-top:3px}
+  .tcard .val small{font-size:.7rem;font-weight:600;opacity:.8}
+
+  .dayrow{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px}
+  .dayrow .date{font-size:1.05rem;font-weight:700}
+  .city-pill{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;background:var(--sand-2);color:var(--teal-d);padding:4px 11px;border-radius:20px;font-weight:600;border:1px solid var(--line);margin-top:3px}
+  .city-pill svg{width:13px;height:13px}
+  .navbtn{background:var(--card);border:1px solid var(--line);width:38px;height:38px;border-radius:12px;color:var(--teal);display:grid;place-items:center;cursor:pointer}
+  .navbtn svg{width:18px;height:18px}
+  .navbtn:active{transform:scale(.94)}
+
+  main{padding:6px 16px}
+  .empty{text-align:center;color:var(--muted);padding:46px 20px;font-size:.92rem}
+  .empty svg{width:46px;height:46px;opacity:.4;margin-bottom:12px;stroke-width:1.6}
+
+  .item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+  .item .dot{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;background:var(--sand-2);color:var(--teal-d)}
+  .item .dot svg{width:20px;height:20px}
+  .item .info{flex:1;min-width:0}
+  .item .info .t{font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item .info .m{font-size:.74rem;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:5px}
+  .item .info .m svg{width:12px;height:12px}
+  .item .amt{font-weight:800;color:var(--terra);font-size:1.02rem;white-space:nowrap}
+  .item .amt small{font-size:.65rem;font-weight:600}
+  .item .del{background:none;border:none;color:#c9c2b4;padding:4px;cursor:pointer}
+  .item .del svg{width:18px;height:18px}
+  .item .del:active{color:var(--terra)}
+
+  .daytotal{text-align:right;color:var(--muted);font-size:.82rem;padding:4px 6px 12px;font-weight:600}
+  .daytotal b{color:var(--ink)}
+
+  .fab{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--terra),#a8472b);color:#fff;border:none;height:58px;padding:0 26px;border-radius:30px;font-size:1rem;font-weight:700;box-shadow:0 8px 24px rgba(199,91,57,.4);display:flex;align-items:center;gap:8px;cursor:pointer;z-index:40}
+  .fab svg{width:22px;height:22px;stroke-width:2.6}
+  .fab:active{transform:translateX(-50%) scale(.95)}
+
+  .reportbtn,.citybtn{position:fixed;bottom:30px;width:48px;height:48px;border-radius:50%;box-shadow:var(--shadow);cursor:pointer;z-index:40;display:grid;place-items:center}
+  .reportbtn{left:18px;background:var(--card);border:1px solid var(--line);color:var(--teal)}
+  .citybtn{right:18px;background:var(--teal);border:none;color:#fff}
+  .reportbtn svg,.citybtn svg{width:21px;height:21px}
+
+  .overlay{position:fixed;inset:0;background:rgba(15,30,28,.5);backdrop-filter:blur(3px);z-index:50;display:none;align-items:flex-end;justify-content:center}
+  .overlay.show{display:flex;animation:fade .2s}
+  @keyframes fade{from{opacity:0}}
+  .sheet{background:var(--sand);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:slideup .28s cubic-bezier(.2,.8,.2,1)}
+  @keyframes slideup{from{transform:translateY(100%)}}
+  .sheet h2{font-size:1.15rem;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .sheet h2 svg{width:20px;height:20px;color:var(--teal)}
+  .sheet h2 .x{margin-left:auto;background:var(--sand-2);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;color:var(--muted);display:grid;place-items:center}
+  .sheet h2 .x svg{width:16px;height:16px}
+
+  label{display:block;font-size:.8rem;font-weight:700;color:var(--teal-d);margin:14px 0 6px}
+  input,select,textarea{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;font-size:1rem;font-family:inherit;color:var(--ink)}
+  input:focus,select:focus{outline:none;border-color:var(--teal)}
+  .amtinput{font-size:1.6rem;font-weight:800;text-align:center;color:var(--terra)}
+
+  .catgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+  .catbtn{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:11px 4px;text-align:center;cursor:pointer;font-size:.7rem;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:5px}
+  .catbtn svg{width:22px;height:22px}
+  .catbtn.sel{border-color:var(--terra);background:#fdf1ec;color:var(--terra)}
+  .catbtn.add{border-style:dashed;color:var(--teal)}
+
+  .save{width:100%;background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#fff;border:none;border-radius:16px;padding:15px;font-size:1.05rem;font-weight:700;margin-top:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .save svg{width:18px;height:18px}
+  .save:active{transform:scale(.98)}
+
+  .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .chip{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:8px 14px;font-size:.85rem;cursor:pointer;font-weight:600}
+  .chip.sel{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+  .rep-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+  .rep-row:last-child{border:none}
+  .rep-row .l{display:flex;align-items:center;gap:8px;font-weight:600}
+  .rep-row .l svg{width:18px;height:18px;color:var(--teal)}
+  .rep-row .r{font-weight:800;color:var(--terra)}
+  .rep-total{background:var(--teal);color:#fff;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;font-weight:800;font-size:1.1rem;margin-top:14px}
+  .seg{display:flex;background:var(--sand-2);border-radius:12px;padding:4px;margin-bottom:14px}
+  .seg button{flex:1;background:none;border:none;padding:9px;border-radius:9px;font-weight:700;font-size:.85rem;color:var(--muted);cursor:pointer;font-family:inherit}
+  .seg button.act{background:var(--card);color:var(--teal);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+  .subhead{margin-top:18px;font-weight:700;font-size:.85rem;color:var(--teal-d);display:flex;align-items:center;gap:6px}
+  .subhead svg{width:16px;height:16px}
+
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:30px;font-size:.85rem;z-index:80;opacity:0;transition:.3s;pointer-events:none;display:flex;align-items:center;gap:7px}
+  .toast svg{width:16px;height:16px;color:var(--gold)}
+  .toast.show{opacity:1;bottom:110px}
+  .hint{font-size:.75rem;color:var(--muted);margin:0 0 8px}
+  .addcity-row{display:flex;gap:8px}
+  .addcity-row .navbtn{width:48px;background:var(--teal);color:#fff;border:none;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<!-- ICON DEFS -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<g id="i-wallet"><path d="M17 14h.01"/><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 9a2 2 0 0 1 2-2h11a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H6a3 3 0 0 0-3 3z"/></g>
+<g id="i-plus"><path d="M5 12h14M12 5v14"/></g>
+<g id="i-close"><path d="M18 6 6 18M6 6l12 12"/></g>
+<g id="i-left"><path d="m15 18-6-6 6-6"/></g>
+<g id="i-right"><path d="m9 18 6-6-6-6"/></g>
+<g id="i-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></g>
+<g id="i-chart"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><rect x="7" y="13" width="2.5" height="5" rx="1"/><rect x="11.75" y="9" width="2.5" height="9" rx="1"/><rect x="16.5" y="5" width="2.5" height="13" rx="1"/></g>
+<g id="i-trash"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></g>
+<g id="i-check"><path d="M20 6 9 17l-5-5"/></g>
+<g id="i-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></g>
+<g id="i-receipt"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1V2l-2 1-2-1-2 1-2-1-2 1-2-1zM8 7h8M8 11h8M8 15h5"/></g>
+<g id="i-utensils"><path d="M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2M5 11v11M19 2v20M19 2c-1.66 0-3 2.24-3 5 0 2.42 1.03 4.44 2.4 4.9.36.12.6.46.6.84V22"/></g>
+<g id="i-coffee"><path d="M18 9h1.5a2.5 2.5 0 0 1 0 5H18M4 9h14v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4zM7 2.5l-.5 2M12 2.5l-.5 2M17 2.5l-.5 2"/></g>
+<g id="i-bag"><path d="M5.5 8h13l-1 12a2 2 0 0 1-2 1.8H8.5a2 2 0 0 1-2-1.8zM9 8V5.5a3 3 0 0 1 6 0V8"/></g>
+<g id="i-phone"><rect x="6.5" y="2" width="11" height="20" rx="2.5"/><path d="M10.5 18.5h3"/></g>
+<g id="i-tag"><path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.42l8.59 8.59a2 2 0 0 0 2.83 0l7.17-7.17a2 2 0 0 0 0-2.83zM7 7h.01"/></g>
+<g id="i-cash"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></g>
+<g id="i-building"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18zM2 22h20M9 6h.01M15 6h.01M9 10h.01M15 10h.01M9 14h.01M15 14h.01M10 22v-4h4v4"/></g>
+</defs></svg>
+
+<header>
+  <div class="brand"><span class="logo"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wallet"/></svg></span>
+    <div><div>Masarifi</div><div class="sub">Track your daily expenses on the road</div></div>
+  </div>
+  <div class="totals">
+    <div class="tcard"><div class="lbl">Today's spending</div><div class="val" id="todayTotal">0 <small>MAD</small></div></div>
+    <div class="tcard"><div class="lbl">This month</div><div class="val" id="monthTotal">0 <small>MAD</small></div></div>
+  </div>
+</header>
+
+<div class="dayrow">
+  <button class="navbtn" id="prevDay"><svg class="ic" viewBox="0 0 24 24"><use href="#i-left"/></svg></button>
+  <div style="text-align:center">
+    <div class="date" id="dayLabel">—</div>
+    <div id="cityPillWrap"></div>
+  </div>
+  <button class="navbtn" id="nextDay"><svg class="ic" viewBox="0 0 24 24"><use href="#i-right"/></svg></button>
+</div>
+
+<main>
+  <div id="list"></div>
+  <div class="daytotal" id="dayTotalLine"></div>
+</main>
+
+<button class="reportbtn" id="openReport" title="Report"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chart"/></svg></button>
+<button class="fab" id="openAdd"><svg class="ic" viewBox="0 0 24 24"><use href="#i-plus"/></svg> Add expense</button>
+<button class="citybtn" id="openCity" title="Today's city"><svg class="ic" viewBox="0 0 24 24"><use href="#i-pin"/></svg></button>
+
+<!-- Add expense -->
+<div class="overlay" id="addOverlay">
+  <div class="sheet">
+    <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-plus"/></svg> Add expense<button class="x" id="closeAdd"><svg class="ic" viewBox="0 0 24 24"><use href="#i-close"/></svg></button></h2>
+    <label>Amount (MAD)</label>
+    <input class="amtinput" id="amtInput" type="number" inputmode="decimal" placeholder="0.00" step="0.01" min="0">
+    <label>Category</label>
+    <div class="catgrid" id="catGrid"></div>
+    <label>Note (optional)</label>
+    <input id="noteInput" type="text" placeholder="e.g. Lunch at restaurant">
+    <label>City</label>
+    <div id="addCityWrap"></div>
+    <button class="save" id="saveExp"><svg class="ic" viewBox="0 0 24 24"><use href="#i-check"/></svg> Save expense</button>
+  </div>
+</div>
+
+<!-- City -->
+<div class="overlay" id="cityOverlay">
+  <div class="sheet">
+    <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-pin"/></svg> Today's city<button class="x" id="closeCity"><svg class="ic" viewBox="0 0 24 24"><use href="#i-close"/></svg></button></h2>
+    <p class="hint">Pick the city you're in today, or add a new one. It will be saved for this day.</p>
+    <div class="chiprow" id="cityChips"></div>
+    <label>Add a new city</label>
+    <div class="addcity-row">
+      <input id="newCity" type="text" placeholder="e.g. Chefchaouen">
+      <button class="navbtn" id="addCityBtn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-plus"/></svg></button>
+    </div>
+    <button class="save" id="saveCity"><svg class="ic" viewBox="0 0 24 24"><use href="#i-check"/></svg> Save city for today</button>
+  </div>
+</div>
+
+<!-- Report -->
+<div class="overlay" id="repOverlay">
+  <div class="sheet">
+    <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-chart"/></svg> Report<button class="x" id="closeRep"><svg class="ic" viewBox="0 0 24 24"><use href="#i-close"/></svg></button></h2>
+    <div class="seg">
+      <button data-r="day" class="act">Today</button>
+      <button data-r="month">Month</button>
+      <button data-r="all">All</button>
+    </div>
+    <div class="subhead"><svg class="ic" viewBox="0 0 24 24"><use href="#i-tag"/></svg> By category</div>
+    <div id="repByCat" style="margin-top:4px"></div>
+    <div class="subhead"><svg class="ic" viewBox="0 0 24 24"><use href="#i-pin"/></svg> By city</div>
+    <div id="repByCity" style="margin-top:4px"></div>
+    <div class="rep-total"><span>Total</span><span id="repTotal">0 MAD</span></div>
+    <button class="save" id="exportBtn" style="background:var(--card);color:var(--teal);border:1.5px solid var(--teal)"><svg class="ic" viewBox="0 0 24 24"><use href="#i-download"/></svg> Export backup (JSON)</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DKEY="masarifi_data_v1";
+const fmt=n=>(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});
+const todayISO=d=>{const x=d||new Date();return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,'0')+"-"+String(x.getDate()).padStart(2,'0');};
+const enDate=iso=>{const[y,m,dd]=iso.split('-');const date=new Date(+y,+m-1,+dd);return date.toLocaleDateString('en-US',{weekday:'long',day:'numeric',month:'long'});};
+const icon=id=>`<svg class="ic" viewBox="0 0 24 24"><use href="#${id}"/></svg>`;
+
+let DB=load();
+let curDate=todayISO();
+let selCat=null, addSelCity=null, citySelTemp=null;
+
+function load(){try{return JSON.parse(localStorage.getItem(DKEY))||defaults();}catch(e){return defaults();}}
+function defaults(){
+  return {
+    expenses:[],
+    cats:[
+      {name:"Food",icon:"i-utensils"},
+      {name:"Coffee",icon:"i-coffee"},
+      {name:"Personal",icon:"i-bag"},
+      {name:"Phone",icon:"i-phone"},
+      {name:"Other",icon:"i-cash"}
+    ],
+    cities:["Casablanca","Marrakech","Fes","Rabat"],
+    dayCity:{}
+  };
+}
+function save(){localStorage.setItem(DKEY,JSON.stringify(DB));}
+function catIcon(name){const c=DB.cats.find(x=>x.name===name);return c?c.icon:"i-cash";}
+
+function toast(t){const e=document.getElementById('toast');e.innerHTML=icon('i-check')+t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800);}
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function render(){
+  document.getElementById('dayLabel').textContent=enDate(curDate);
+  const city=DB.dayCity[curDate];
+  document.getElementById('cityPillWrap').innerHTML=city
+    ?`<span class="city-pill">${icon('i-pin')} ${escapeHtml(city)}</span>`
+    :`<span class="city-pill" style="opacity:.6">${icon('i-pin')} Set city</span>`;
+
+  const dayExp=DB.expenses.filter(e=>e.date===curDate);
+  const list=document.getElementById('list');
+  if(!dayExp.length){
+    list.innerHTML=`<div class="empty">${icon('i-receipt')}<div>No expenses for this day yet.<br>Tap "Add expense" to start.</div></div>`;
+    document.getElementById('dayTotalLine').textContent="";
+  }else{
+    list.innerHTML=dayExp.map(e=>`<div class="item">
+      <div class="dot">${icon(catIcon(e.cat))}</div>
+      <div class="info"><div class="t">${escapeHtml(e.cat)}${e.note?' · '+escapeHtml(e.note):''}</div>
+      <div class="m">${e.city?icon('i-pin')+' '+escapeHtml(e.city)+' · ':''}${new Date(e.id).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</div></div>
+      <div class="amt">${fmt(e.amount)}<small> MAD</small></div>
+      <button class="del" data-id="${e.id}">${icon('i-trash')}</button>
+    </div>`).join('');
+    const dt=dayExp.reduce((s,e)=>s+e.amount,0);
+    document.getElementById('dayTotalLine').innerHTML=`Day total: <b>${fmt(dt)} MAD</b>`;
+    list.querySelectorAll('.del').forEach(b=>b.onclick=()=>{
+      if(confirm('Delete this expense?')){DB.expenses=DB.expenses.filter(x=>x.id!=b.dataset.id);save();render();}
+    });
+  }
+  const td=DB.expenses.filter(e=>e.date===curDate).reduce((s,e)=>s+e.amount,0);
+  document.getElementById('todayTotal').innerHTML=`${fmt(td)} <small>MAD</small>`;
+  const ym=curDate.slice(0,7);
+  const mt=DB.expenses.filter(e=>e.date.slice(0,7)===ym).reduce((s,e)=>s+e.amount,0);
+  document.getElementById('monthTotal').innerHTML=`${fmt(mt)} <small>MAD</small>`;
+}
+
+document.getElementById('prevDay').onclick=()=>{const d=new Date(curDate);d.setDate(d.getDate()-1);curDate=todayISO(d);render();};
+document.getElementById('nextDay').onclick=()=>{const d=new Date(curDate);d.setDate(d.getDate()+1);curDate=todayISO(d);render();};
+
+function renderCats(){
+  const g=document.getElementById('catGrid');
+  g.innerHTML=DB.cats.map(c=>`<div class="catbtn ${selCat===c.name?'sel':''}" data-c="${escapeHtml(c.name)}">${icon(c.icon)}${escapeHtml(c.name)}</div>`).join('')
+    +`<div class="catbtn add" id="addCat">${icon('i-plus')}Add</div>`;
+  g.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{selCat=b.dataset.c;renderCats();});
+  document.getElementById('addCat').onclick=()=>{
+    const n=prompt('New category name:');if(!n)return;
+    DB.cats.push({name:n.trim(),icon:"i-tag"});save();selCat=n.trim();renderCats();
+  };
+}
+function renderAddCity(){
+  const w=document.getElementById('addCityWrap');
+  w.innerHTML=`<div class="chiprow">`+DB.cities.map(c=>`<span class="chip ${addSelCity===c?'sel':''}" data-c="${escapeHtml(c)}">${escapeHtml(c)}</span>`).join('')+`</div>`;
+  w.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{addSelCity=b.dataset.c;renderAddCity();});
+}
+function openAdd(){
+  selCat=DB.cats[0]?.name||null;
+  addSelCity=DB.dayCity[curDate]||DB.cities[0]||null;
+  document.getElementById('amtInput').value='';
+  document.getElementById('noteInput').value='';
+  renderCats();renderAddCity();
+  document.getElementById('addOverlay').classList.add('show');
+  setTimeout(()=>document.getElementById('amtInput').focus(),300);
+}
+document.getElementById('openAdd').onclick=openAdd;
+document.getElementById('closeAdd').onclick=()=>document.getElementById('addOverlay').classList.remove('show');
+document.getElementById('saveExp').onclick=()=>{
+  const amt=parseFloat(document.getElementById('amtInput').value);
+  if(!amt||amt<=0){toast('Enter a valid amount');return;}
+  if(!selCat){toast('Pick a category');return;}
+  DB.expenses.push({id:Date.now(),date:curDate,amount:amt,cat:selCat,note:document.getElementById('noteInput').value.trim(),city:addSelCity||''});
+  if(addSelCity)DB.dayCity[curDate]=addSelCity;
+  save();render();
+  document.getElementById('addOverlay').classList.remove('show');
+  toast('Saved');
+};
+
+function renderCityChips(){
+  const w=document.getElementById('cityChips');
+  w.innerHTML=DB.cities.map(c=>`<span class="chip ${citySelTemp===c?'sel':''}" data-c="${escapeHtml(c)}">${escapeHtml(c)}</span>`).join('');
+  w.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{citySelTemp=b.dataset.c;renderCityChips();});
+}
+document.getElementById('openCity').onclick=()=>{
+  citySelTemp=DB.dayCity[curDate]||null;renderCityChips();
+  document.getElementById('cityOverlay').classList.add('show');
+};
+document.getElementById('closeCity').onclick=()=>document.getElementById('cityOverlay').classList.remove('show');
+document.getElementById('addCityBtn').onclick=()=>{
+  const v=document.getElementById('newCity').value.trim();if(!v)return;
+  if(!DB.cities.includes(v))DB.cities.push(v);
+  citySelTemp=v;document.getElementById('newCity').value='';save();renderCityChips();
+};
+document.getElementById('saveCity').onclick=()=>{
+  if(citySelTemp){DB.dayCity[curDate]=citySelTemp;save();render();toast('City saved');}
+  document.getElementById('cityOverlay').classList.remove('show');
+};
+
+let repMode='day';
+function openRep(){document.getElementById('repOverlay').classList.add('show');renderRep();}
+document.getElementById('openReport').onclick=openRep;
+document.getElementById('closeRep').onclick=()=>document.getElementById('repOverlay').classList.remove('show');
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.seg button').forEach(x=>x.classList.remove('act'));
+  b.classList.add('act');repMode=b.dataset.r;renderRep();
+});
+function repFilter(e){
+  if(repMode==='day')return e.date===curDate;
+  if(repMode==='month')return e.date.slice(0,7)===curDate.slice(0,7);
+  return true;
+}
+function renderRep(){
+  const exp=DB.expenses.filter(repFilter);
+  const byCat={};exp.forEach(e=>byCat[e.cat]=(byCat[e.cat]||0)+e.amount);
+  const byCity={};exp.forEach(e=>{const c=e.city||'No city';byCity[c]=(byCity[c]||0)+e.amount;});
+  const total=exp.reduce((s,e)=>s+e.amount,0);
+  document.getElementById('repByCat').innerHTML=Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+    `<div class="rep-row"><span class="l">${icon(catIcon(k))} ${escapeHtml(k)}</span><span class="r">${fmt(v)} MAD</span></div>`).join('')
+    ||'<div class="empty" style="padding:18px">Nothing here</div>';
+  document.getElementById('repByCity').innerHTML=Object.entries(byCity).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+    `<div class="rep-row"><span class="l">${icon('i-pin')} ${escapeHtml(k)}</span><span class="r">${fmt(v)} MAD</span></div>`).join('')
+    ||'<div class="empty" style="padding:10px">—</div>';
+  document.getElementById('repTotal').textContent=fmt(total)+' MAD';
+}
+document.getElementById('exportBtn').onclick=()=>{
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='masarifi-backup-'+todayISO()+'.json';a.click();
+  toast('Backup exported');
+};
+
+document.querySelectorAll('.overlay').forEach(o=>o.onclick=e=>{if(e.target===o)o.classList.remove('show');});
+
+render();
+
+if('serviceWorker' in navigator){
+  const sw=`self.addEventListener('install',e=>self.skipWaiting());
+  self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+  self.addEventListener('fetch',e=>{e.respondWith(caches.open('masarifi-v1').then(c=>fetch(e.request).then(r=>{c.put(e.request,r.clone());return r;}).catch(()=>c.match(e.request))));});`;
+  const blob=new Blob([sw],{type:'text/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+</script>
+</body>
+</html>
